@@ -1,0 +1,50 @@
+# Spring / Gradle
+.gradle/
+build/
+HELP.md
+
+# Gradle Wrapper
+gradle/wrapper/gradle-wrapper.jar
+
+# Node (frontend)
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+
+# IDE
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+out/
+
+# macOS
+.DS_Store
+
+# Test build folders
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# STS
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Docker (혹시 대비)
+.env
+docker-compose.yml

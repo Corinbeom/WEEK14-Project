@@ -1,0 +1,39 @@
+plugins {
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+    id 'java'
+    id 'com.github.node-gradle.node' version '3.5.1'
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'com.mysql:mysql-connector-j:8.3.0'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+node {
+    version = '23.11.0'
+    npmVersion = '10.9.2'
+    download = false
+    nodeProjectDir = file("${projectDir}/../frontend")
+}
+
+tasks.register('npmBuild', com.github.gradle.node.npm.task.NpmTask) {
+    dependsOn tasks.npmInstall
+    args = ['run', 'build']
+}
+
+tasks.register('copyFrontend', Copy) {
+    dependsOn tasks.npmBuild
+    from "${projectDir}/../frontend/dist"
+    into "${projectDir}/src/main/resources/static"
+}
+
+tasks.named('processResources') {
+    dependsOn tasks.named('copyFrontend')
+}
