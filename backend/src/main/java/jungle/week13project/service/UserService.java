@@ -1,6 +1,6 @@
 package jungle.week13project.service;
 
-import jungle.week13project.model.User;
+import jungle.week13project.model.entity.User;
 import jungle.week13project.repository.UserRepository;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -3,13 +3,11 @@ package jungle.week13project.config;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
-import jungle.week13project.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
-import java.util.Base64;
 import java.util.Date;
 
 @Slf4j
@@ -78,10 +76,19 @@ public class JwtUtils {
         }
     }
 
+    public String extractUserId(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getSignKey())
+                .build()
+                .parseClaimsJws(token.replace("Bearer ", ""))
+                .getBody();
+        return claims.getSubject();  // userId가 subject에 들어가 있음
+    }
+
     public boolean validateToken(String token) {
         if (token == null || !token.startsWith("Bearer ")) {
             log.error("토큰이 null이거나 Bearer 접두사가 없습니다.");
-            return false;
+            throw new IllegalArgumentException("유효하지 않은 인증 정보입니다.");
         }
 
         try {

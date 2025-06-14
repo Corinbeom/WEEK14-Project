@@ -1,6 +1,6 @@
 package jungle.week13project.repository;
 
-import jungle.week13project.model.User;
+import jungle.week13project.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

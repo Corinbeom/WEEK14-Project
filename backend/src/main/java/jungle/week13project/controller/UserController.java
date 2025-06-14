@@ -1,7 +1,7 @@
 package jungle.week13project.controller;
 
 import jungle.week13project.config.JwtUtils;
-import jungle.week13project.model.User;
+import jungle.week13project.model.entity.User;
 import jungle.week13project.model.dto.LoginResponse;
 import jungle.week13project.repository.UserRepository;
 import jungle.week13project.service.UserService;

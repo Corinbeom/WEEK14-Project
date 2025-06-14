@@ -4,4 +4,10 @@ import type { UserRegisterDTO, UserLoginDTO, LoginResponseDTO } from '../types/U
 const API_URL = 'http://localhost:8080/api/user';
 
 export const registerUser = (data: UserRegisterDTO) => axios.post(`${API_URL}/save`, data);
-export const loginUser = (data: UserLoginDTO) => axios.post<LoginResponseDTO>(`${API_URL}/login`, data);
+// 로그인하면서 토큰 자동 저장
+export const loginUser = async (data: UserLoginDTO): Promise<LoginResponseDTO> => {
+    const { data: loginData }: { data: LoginResponseDTO } = await axios.post(`${API_URL}/login`, data);
+    localStorage.setItem('token', loginData.token);
+    localStorage.setItem('userId', loginData.userId);
+    return loginData;
+};

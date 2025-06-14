@@ -1,0 +1,49 @@
+.header {
+    background-color: #ffffff;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 80px;
+    border-bottom: 1px solid #e0e0e0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);  /* 살짝 강조된 그림자 */
+    transition: box-shadow 0.3s, background-color 0.3s;
+}
+
+.header:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);  /* hover 시 더 부드럽게 올라오는 그림자 */
+    background-color: #fafafa;  /* 살짝 색 밝아지게 */
+}
+
+
+.left {
+    flex: 1;
+}
+
+.center {
+    flex: 1;
+    text-align: center;
+}
+
+.logo {
+    height: 70px;
+    max-height: 70px;
+    object-fit: contain;
+}
+
+.nav {
+    display: flex;
+    justify-content: right;
+    gap: 1.5rem;
+}
+
+.nav a {
+    color: #000000;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.nav a:hover {
+    color: #ffd700;
+}

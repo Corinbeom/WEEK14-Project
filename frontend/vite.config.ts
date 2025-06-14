@@ -17,5 +17,5 @@ export default defineConfig({
       },
     },
   },
-  base: './',  // ✅ 이 한 줄 추가 (핵심)
+  base: '/',  // ✅ 이 한 줄 추가 (핵심)
 })
