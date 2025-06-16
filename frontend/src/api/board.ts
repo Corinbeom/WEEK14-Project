@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { Board } from '../types/Board';
+import type {Board, BoardType} from '../types/Board';
 
 const BASE_URL = '/api/board';
 
@@ -27,6 +27,17 @@ export const getBoard = async (boardId: number): Promise<Board> => {
     });
     return res.data;
 };
+
+// 타입 별 게시글 조회
+export async function getBoardsByType(type?: BoardType, token?: string): Promise<Board[]> {
+    const url = type ? `/api/board?type=${type}` : '/api/board';
+    const response = await axios.get(url, {
+        headers: {
+            Authorization: token || ''
+        }
+    });
+    return response.data;
+}
 
 // 게시글 수정 (FormData 사용)
 export const updateBoard = async (boardId: number, formData: FormData, token: string) => {

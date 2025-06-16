@@ -7,5 +7,4 @@ import java.time.LocalDate;
 
 public interface BoardViewHistoryRepository extends JpaRepository<BoardViewHistory, Long> {
     boolean existsByBoardIdAndUserIdAndViewDate(Long boardId, String userId, LocalDate viewDate);
-
 }

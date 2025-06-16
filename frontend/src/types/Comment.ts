@@ -3,4 +3,5 @@ export interface CommentType {
     author: string;
     content: string;
     createdTime: string;
+    postId: string;
 }

@@ -1,14 +1,13 @@
 .form-container {
-    max-width: 600px;
-    margin-right: 10rem;
-    padding: 100px;
+    width: 400px;
+    padding: 40px;
     background: #fff;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     border-radius: 10px;
     opacity: 0;
     transform: translateY(30px);
     animation: fadeInUpCard 0.8s forwards;
-    animation-delay: 1.2s;  /* 왼쪽 슬로건 끝난 뒤 등장 */
+    animation-delay: 1.2s;
 }
 
 @keyframes fadeInUpCard {
@@ -43,15 +42,10 @@
 }
 
 button {
-    width: 100%;
-    padding: 12px;
+    padding: 10px 20px;
     font-size: 16px;
-    background: #007bff;
-    color: #fff;
-    border: none;
     border-radius: 6px;
     cursor: pointer;
-    transition: background 0.3s;
 }
 
 button:hover {
@@ -90,4 +84,35 @@ button:hover {
     margin-top: 8px;
     font-size: 13px;
     color: #888;
+}
+
+.form-button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.form-button:hover {
+    background: #0056b3;
+}
+
+.comment-button {
+    padding: 8px 20px;
+    font-size: 14px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.comment-button:hover {
+    background: #0056b3;
 }

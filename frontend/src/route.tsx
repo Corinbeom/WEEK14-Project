@@ -5,6 +5,7 @@ import PostBoard from "./pages/Board/PostBoard.tsx";
 import GetBoards from "./pages/Board/GetBoards.tsx";
 import BoardDetail from "./pages/Board/BoardDetail.tsx";
 import EditBoard from "./pages/Board/EditBoard.tsx";
+import ProfilePage from "./pages/ProfilePage.tsx";
 
 export default function Router() {
     return (
@@ -16,7 +17,8 @@ export default function Router() {
                 <Route path="/boards/new" element={<PostBoard />} />
                 <Route path="/board/:id" element={<BoardDetail />} />
                 <Route path="/board/:id/edit" element={<EditBoard />} />
-
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/boards/:type" element={<GetBoards />} />
             </Routes>
         </BrowserRouter>
 );

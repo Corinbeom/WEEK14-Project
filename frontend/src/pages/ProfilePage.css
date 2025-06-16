@@ -1,0 +1,163 @@
+.profile-page {
+    display: flex;
+    padding: 2rem;
+    gap: 3rem;
+    align-items: flex-start;
+    max-width: 1200px;  /* 추가 */
+    margin: 0 auto;     /* 가운데 정렬 */
+}
+
+/* 비율로 조절 (1:2 비율) */
+.profile-info {
+    flex: 1;
+    min-width: 0;
+    max-width: 450px;
+    height: 600px;
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+}
+
+.profile-image-wrapper {
+    cursor: pointer;
+    position: relative;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #ddd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 55%;
+    display: block;
+}
+
+.profile-image-wrapper::after {
+    content: '프로필 수정';
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.6);
+    color: white;
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 5px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.profile-image-wrapper:hover::after {
+    opacity: 1;
+}
+
+.profile-name {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.profile-email {
+    font-size: 1.2rem;
+    color: gray;
+}
+
+/* 우측 활동 부분 */
+.profile-activity {
+    flex: 1;
+    flex-wrap: wrap;  /* 🔥 추가: 줄바꿈 허용 */
+    justify-content: flex-start; /* 🔥 카드가 왼쪽부터 채워지게 */
+    gap: 1rem;
+    min-width: 0;
+    max-width: 600px;
+}
+
+.activity-section {
+    margin-bottom: 2rem;
+    width: 858px;
+    max-width: 860px;  /* 🔥 최대폭 제한 */
+}
+
+.activity-grid-wrapper {
+    position: relative;
+}
+
+.activity-grid {
+    display: flex;
+    overflow: hidden;
+    gap: 1rem;
+    width: 900px;
+    flex-wrap: wrap;
+}
+
+.activity-card {
+    flex: 0 0 200px;
+    height: 120px;
+    background: #fff;
+    border-radius: 15px;
+    border: 1px solid #e0e0e0;  /* 추가: 카드 테두리 */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);  /* 살짝 줄여서 더 깔끔 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.activity-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.slider-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #fff;  /* 🔥 완전 흰색 배경 */
+    border: 2px solid #999;  /* 🔥 테두리 색상 추가 (연한 회색) */
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* 🔥 살짝 그림자 추가해서 떠보이게 */
+    transition: all 0.2s ease;
+}
+
+.slider-button:hover {
+    border-color: #333;  /* 🔥 hover시 테두리 진해짐 */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.slider-button.left {
+    left: -20px;
+}
+
+.slider-button.right {
+    right: -20px;
+}
+
+.slider-button img {
+    width: 60%;
+    height: 60%;
+    object-fit: contain;
+    transform: translateX(-2px);  /* 약간 오른쪽으로 밀어줌 */
+}

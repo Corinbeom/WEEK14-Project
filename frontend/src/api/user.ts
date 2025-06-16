@@ -1,5 +1,6 @@
 import axios from 'axios';
 import type { UserRegisterDTO, UserLoginDTO, LoginResponseDTO } from '../types/User';
+import type {Profile} from "../types/Profile.ts";
 
 const API_URL = 'http://localhost:8080/api/user';
 
@@ -11,3 +12,21 @@ export const loginUser = async (data: UserLoginDTO): Promise<LoginResponseDTO> =
     localStorage.setItem('userId', loginData.userId);
     return loginData;
 };
+
+export async function getProfile(token: string): Promise<Profile> {
+    const response = await axios.get('/api/user/profile', {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+    return response.data;
+}
+
+export async function uploadProfileImage(formData: FormData, token: string): Promise<void> {
+    await axios.post('/api/user/uploadProfileImage', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`
+        }
+    });
+}

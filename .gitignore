@@ -48,3 +48,5 @@ bin/
 # Docker (혹시 대비)
 .env
 docker-compose.yml
+
+backend/src/main/resources/static/assets

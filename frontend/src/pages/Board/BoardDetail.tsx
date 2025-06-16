@@ -1,17 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import type { Board } from '../../types/Board';
-import {getBoard, toggleLike, increaseViewCount, deleteBoard} from '../../api/board';
-import {getComments, createComment, deleteComment} from '../../api/comment';
-import type {CommentType} from "../../types/Comment";
+import { getBoard, toggleLike, increaseViewCount, deleteBoard } from '../../api/board';
+import { getComments, createComment, deleteComment } from '../../api/comment';
+import type { CommentType } from "../../types/Comment";
 
+import '../../assets/styles/Form.css';
+import './BoardDetail.css';  // ✅ 새로 추가한 전용 CSS
 
 export default function BoardDetail() {
     const { id } = useParams<{ id: string }>();
     const [board, setBoard] = useState<Board | null>(null);
     const navigate = useNavigate();
     const token = localStorage.getItem('token') || '';
-    const userId = localStorage.getItem('userId') || '';  // 로그인 시 userId도 저장해놨다고 가정
+    const userId = localStorage.getItem('userId') || '';
     const [comments, setComments] = useState<CommentType[]>([]);
     const [newComment, setNewComment] = useState('');
 
@@ -38,7 +40,6 @@ export default function BoardDetail() {
         fetchComments();
         increaseView();
     }, [id]);
-
 
     const handleToggleLike = async () => {
         if (!token) {
@@ -81,46 +82,51 @@ export default function BoardDetail() {
     const isAuthor = userId === board.author;
 
     return (
-        <div>
-            <h2>{board.title}</h2>
-            <p>작성자: {board.author}</p>
-            <p>조회수: {board.viewCount} | 좋아요: {board.likeCount}</p>
-            {board.imageUrl && <img src={board.imageUrl} alt="첨부 이미지"/>}
-            <p>{board.content}</p>
-
-            <button onClick={handleToggleLike}>좋아요</button>
-
-            {isAuthor && (
-                <div>
-                    <button onClick={() => navigate(`/board/${id}/edit`)}>수정</button>
-                    <button onClick={handleDelete}>삭제</button>
+        <div className="detail-container">
+            <div className="detail-header">
+                <h2>{board.title}</h2>
+                <div className="detail-meta">
+                    작성자: {board.author} | 조회수: {board.viewCount} | 좋아요: {board.likeCount}
                 </div>
-            )}
-            <div>
+            </div>
+
+            {board.imageUrl && <img src={board.imageUrl} alt="첨부 이미지" className="detail-image" />}
+
+            <div className="detail-content">{board.content}</div>
+
+            <div className="button-group">
+                <button className="action-button" onClick={handleToggleLike}>좋아요</button>
+                {isAuthor && (
+                    <>
+                        <button className="action-button" onClick={() => navigate(`/board/${id}/edit`)}>수정</button>
+                        <button className="action-button" onClick={handleDelete}>삭제</button>
+                    </>
+                )}
+            </div>
+
+            <div className="comments-section">
                 <h3>댓글</h3>
                 <form onSubmit={handleCommentSubmit}>
-        <textarea
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            required
-        />
-                    <button type="submit">작성</button>
+                    <textarea
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        required
+                    />
+                    <button className="comment-button" type="submit">작성</button>
                 </form>
 
                 <ul>
                     {comments.map((comment) => (
-                        <li key={comment.id}>
+                        <li className="comment-item" key={comment.id}>
                             <p>{comment.author}: {comment.content}</p>
                             <p>{new Date(comment.createdTime).toLocaleString()}</p>
                             {comment.author === userId && (
-                                <button onClick={() => handleDeleteComment(comment.id)}>삭제</button>
+                                <button className="action-button" onClick={() => handleDeleteComment(comment.id)}>삭제</button>
                             )}
                         </li>
                     ))}
                 </ul>
             </div>
-
         </div>
-
     );
 }

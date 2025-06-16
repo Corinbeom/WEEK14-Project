@@ -3,7 +3,10 @@ package jungle.week13project.controller;
 import jungle.week13project.config.JwtUtils;
 import jungle.week13project.model.dto.BoardRequest;
 import jungle.week13project.model.dto.BoardResponse;
+import jungle.week13project.model.entity.User;
+import jungle.week13project.model.enums.BoardType;
 import jungle.week13project.service.BoardService;
+import jungle.week13project.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,22 +24,33 @@ public class BoardController {
     @Autowired
     private JwtUtils jwtUtils;
 
+    @Autowired
+    private UserService userService;
+
     @PostMapping
-    public ResponseEntity<BoardResponse> createBoard(@ModelAttribute BoardRequest request, @RequestHeader(value = "Authorization", required = false) String authHeader) {
+    public ResponseEntity<BoardResponse> createBoard(
+            @ModelAttribute BoardRequest request,
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+
         if (!jwtUtils.validateToken(authHeader)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        String userName = jwtUtils.extractUserName(authHeader);
-        request.setAuthor(userName);
+        String userId = jwtUtils.extractUserId(authHeader);
+        User user = userService.findByUserId(userId);  // 🔥 핵심 추가: User 조회
 
-        return ResponseEntity.ok(boardService.createBoard(request));
+        return ResponseEntity.ok(boardService.createBoard(request, user));
     }
+
 
     @GetMapping
-    public ResponseEntity<List<BoardResponse>> getAllBoards() {
-        return ResponseEntity.ok(boardService.getAllBoards());
+    public ResponseEntity<List<BoardResponse>> getBoards(@RequestParam(required = false) BoardType type) {
+        List<BoardResponse> boards = (type != null)
+                ? boardService.getBoardsByType(type)
+                : boardService.getAllBoards();
+        return ResponseEntity.ok(boards);
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<BoardResponse> getBoardById(@PathVariable Long id, @RequestHeader(value = "Authorization", required = false) String authHeader) {
@@ -52,27 +66,26 @@ public class BoardController {
     @PutMapping("/{id}")
     public ResponseEntity<BoardResponse> updateBoard(
             @PathVariable Long id,
-            @RequestBody BoardRequest request,
+            @ModelAttribute BoardRequest request,  // 이미지 포함이면 @ModelAttribute 유지
             @RequestHeader(value = "Authorization", required = false) String authHeader) {
 
         if (!jwtUtils.validateToken(authHeader)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // 수정할 때도 author 검증을 한다면 여기에 추가
-        String userName = jwtUtils.extractUserName(authHeader);
+        String userId = jwtUtils.extractUserId(authHeader);
+        User user = userService.findByUserId(userId);  // 🔥 핵심 추가
 
         BoardResponse existingBoard = boardService.getBoardById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다."));
 
-        if (!existingBoard.getAuthor().equals(userName)) {
+        if (!existingBoard.getAuthor().equals(user.getUserName())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        // author는 request로부터 덮어씌우지 않고 유지
-        request.setAuthor(userName);
-        return ResponseEntity.ok(boardService.updateBoard(id, request));
+        return ResponseEntity.ok(boardService.updateBoard(id, request, user));
     }
+
 
 
     @DeleteMapping("/{id}")
@@ -98,8 +111,11 @@ public class BoardController {
         if (!jwtUtils.validateToken(authHeader)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+
         String userId = jwtUtils.extractUserId(authHeader);
-        boardService.toggleLike(id, userId);
+        User user = userService.findByUserId(userId);  // 🔥 User 엔티티 조회 (핵심 추가)
+
+        boardService.toggleLike(id, user);
         return ResponseEntity.ok().build();
     }
 

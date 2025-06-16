@@ -5,14 +5,15 @@
     align-items: center;
     justify-content: space-between;
     height: 80px;
-    border-bottom: 1px solid #e0e0e0;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);  /* 살짝 강조된 그림자 */
+    border-bottom: 5px solid #f4f4f4;
+    /* 로그인 박스처럼 box-shadow 강조 */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     transition: box-shadow 0.3s, background-color 0.3s;
 }
 
 .header:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);  /* hover 시 더 부드럽게 올라오는 그림자 */
-    background-color: #fafafa;  /* 살짝 색 밝아지게 */
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.2), 0 6px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fafafa;
 }
 
 

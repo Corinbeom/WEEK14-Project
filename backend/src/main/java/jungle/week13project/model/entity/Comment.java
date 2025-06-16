@@ -20,7 +20,9 @@ public class Comment {
     @JsonBackReference
     private Board post;
 
-    private String author;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;  // 작성자
 
     private String content;
 

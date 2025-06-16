@@ -5,6 +5,8 @@ import jungle.week13project.model.dto.BoardResponse;
 import jungle.week13project.model.entity.Board;
 import jungle.week13project.model.entity.BoardLike;
 import jungle.week13project.model.entity.BoardViewHistory;
+import jungle.week13project.model.entity.User;
+import jungle.week13project.model.enums.BoardType;
 import jungle.week13project.repository.BoardLikeRepository;
 import jungle.week13project.repository.BoardRepository;
 import jungle.week13project.repository.BoardViewHistoryRepository;
@@ -36,17 +38,19 @@ public class BoardService {
 
 
     // 게시글 작성
-    public BoardResponse createBoard(BoardRequest boardRequest) {
+    public BoardResponse createBoard(BoardRequest boardRequest, User user) {
         Board board = new Board();
         board.setType(boardRequest.getType());
         board.setTitle(boardRequest.getTitle());
         board.setContent(boardRequest.getContent());
-        board.setAuthor(boardRequest.getAuthor());
+        board.setUser(user);
         board.setViewCount(0);
         board.setLikeCount(0);
 
-        String savedFilePath = FileUploadUtil.saveImageFile(boardRequest.getImageFile(), uploadDir);
-        board.setImageUrl(savedFilePath);
+        if (boardRequest.getImageFile() != null && !boardRequest.getImageFile().isEmpty()) {
+            String imagePath = FileUploadUtil.saveImageFile(boardRequest.getImageFile(), uploadDir, "BoardImage");
+            board.setImageUrl("/uploads/" + imagePath);
+        }
 
         Board saved = boardRepository.save(board);
         return convertToResponse(saved);
@@ -58,6 +62,13 @@ public class BoardService {
         return boards.stream().map(this::convertToResponse).collect(Collectors.toList());
     }
 
+    public List<BoardResponse> getBoardsByType(BoardType type) {
+        List<Board> boards = boardRepository.findByType(type);
+        return boards.stream()
+                .map(this::convertToResponse)
+                .toList();
+    }
+
     // 게시글 상세 조회
     public Optional<BoardResponse> getBoardById(Long id) {
         return boardRepository.findById(id).map(this::convertToResponse);
@@ -67,23 +78,27 @@ public class BoardService {
         boardRepository.deleteById(id);
     }
 
-    // 게시글 수정 로직
-    public BoardResponse updateBoard(Long id, BoardRequest dto) {
+    // 게시글 수정
+    public BoardResponse updateBoard(Long id, BoardRequest dto, User user) {
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
 
-        // 작성자(author)는 수정 불가 (고정)
+        // 작성자 검증
+        if (!board.getUser().getId().equals(user.getId())) {
+            throw new SecurityException("작성자만 수정할 수 있습니다.");
+        }
+
+        // 수정 처리
         board.setType(dto.getType());
         board.setTitle(dto.getTitle());
         board.setContent(dto.getContent());
 
-        // 이미지 저장 처리
+        // 이미지 수정 처리
         if (dto.getImageFile() != null && !dto.getImageFile().isEmpty()) {
-            String savedFilePath = FileUploadUtil.saveImageFile(dto.getImageFile(), uploadDir);
-            board.setImageUrl(savedFilePath);
+            String imagePath = FileUploadUtil.saveImageFile(dto.getImageFile(), uploadDir, "BoardImage");
+            board.setImageUrl("/uploads/" + imagePath);
         }
 
-        // 수정시 modifiedTime은 @PreUpdate가 자동으로 처리
         Board updatedBoard = boardRepository.save(board);
         return convertToResponse(updatedBoard);
     }
@@ -109,17 +124,17 @@ public class BoardService {
 
     // 좋아요 증가 로직
     @Transactional
-    public void toggleLike(Long boardId, String userId) {
-        Optional<BoardLike> existingLike = boardLikeRepository.findByBoardIdAndUserId(boardId, userId);
-
+    public void toggleLike(Long boardId, User user) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+
+        Optional<BoardLike> existingLike = boardLikeRepository.findByBoardAndUser(board, user);
 
         if (existingLike.isPresent()) {
             boardLikeRepository.delete(existingLike.get());
             board.setLikeCount(board.getLikeCount() - 1);
         } else {
-            BoardLike like = new BoardLike(boardId, userId);
+            BoardLike like = new BoardLike(board, user);
             boardLikeRepository.save(like);
             board.setLikeCount(board.getLikeCount() + 1);
         }
@@ -129,13 +144,17 @@ public class BoardService {
 
 
     private BoardResponse convertToResponse(Board board) {
+
+
         BoardResponse dto = new BoardResponse();
         dto.setId(board.getId());
         dto.setType(board.getType());
         dto.setTitle(board.getTitle());
         dto.setContent(board.getContent());
         dto.setImageUrl(board.getImageUrl());
-        dto.setAuthor(board.getAuthor());
+
+        dto.setAuthor(board.getUser() != null ? board.getUser().getUserName() : "알 수 없음");  // null-safe (이전 로직에서 저장했던 Author 필드가 오류를 발생시켰음)
+
         dto.setViewCount(board.getViewCount());
         dto.setLikeCount(board.getLikeCount());
         dto.setCreatedTime(board.getCreatedTime());

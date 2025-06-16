@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import type { BoardType } from '../../types/Board';
 import { getBoard, updateBoard } from '../../api/board';
+import '../../assets/styles/Form.css';
+import './PostBoard.css';
 
 export default function EditBoard() {
     const params = useParams();
@@ -15,6 +17,8 @@ export default function EditBoard() {
     const [imageUrl, setImageUrl] = useState('');
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/svg+xml'];
+
     useEffect(() => {
         if (!id) return;
         const fetchData = async () => {
@@ -27,6 +31,17 @@ export default function EditBoard() {
         fetchData();
     }, [id]);
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            if (!allowedTypes.includes(file.type)) {
+                alert("지원하지 않는 파일 형식입니다. (png, jpg, svg만 지원)");
+                return;
+            }
+            setSelectedFile(file);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -34,11 +49,10 @@ export default function EditBoard() {
         formData.append('type', type);
         formData.append('title', title);
         formData.append('content', content);
-        // 파일 선택 안한 경우 → 기존 이미지 URL 유지
         if (selectedFile) {
             formData.append('imageFile', selectedFile);
         } else {
-            formData.append('imageUrl', imageUrl);  // 기존 URL 그대로 보냄
+            formData.append('imageUrl', imageUrl);
         }
 
         await updateBoard(parseInt(id!), formData, token);
@@ -47,10 +61,10 @@ export default function EditBoard() {
     };
 
     return (
-        <div>
+        <div className="post-container">
             <h2>게시글 수정</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
+            <form onSubmit={handleSubmit} className="post-form">
+                <div className="form-group">
                     <label>게시판 타입:</label>
                     <select value={type} onChange={(e) => setType(e.target.value as BoardType)}>
                         <option value="JUNGLE">정글</option>
@@ -58,27 +72,32 @@ export default function EditBoard() {
                         <option value="GAME_TECH_LAB">게임테크랩</option>
                     </select>
                 </div>
-                <div>
+
+                <div className="form-group">
                     <label>제목:</label>
                     <input value={title} onChange={(e) => setTitle(e.target.value)} required />
                 </div>
-                <div>
+
+                <div className="form-group">
                     <label>본문:</label>
                     <textarea value={content} onChange={(e) => setContent(e.target.value)} required />
                 </div>
-                <div>
+
+                <div className="form-group">
                     <label>현재 이미지:</label>
-                    {imageUrl && <img src={imageUrl} alt="기존 이미지" style={{maxWidth: '200px'}} />}
+                    {imageUrl && <img src={imageUrl} alt="기존 이미지" style={{ maxWidth: '200px' }} />}
                 </div>
-                <div>
-                    <label>새 이미지 선택:</label>
-                    <input type="file" onChange={(e) => {
-                        if (e.target.files?.[0]) {
-                            setSelectedFile(e.target.files[0]);
-                        }
-                    }} />
+
+                <div className="form-group">
+                    <label>새 이미지 파일 (png, jpg, svg):</label>
+                    <input
+                        type="file"
+                        accept="image/png, image/jpeg, image/svg+xml"
+                        onChange={handleFileChange}
+                    />
                 </div>
-                <button type="submit">수정하기</button>
+
+                <button type="submit" className="form-button">수정하기</button>
             </form>
         </div>
     );

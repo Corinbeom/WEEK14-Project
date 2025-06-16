@@ -1,5 +1,5 @@
 // import React from 'react';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import {BrowserRouter, Routes, Route, Link, useNavigate} from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import Header from './components/Header/Header';
@@ -12,12 +12,15 @@ import './Home.css';
 import {useState} from "react";
 import type {UserLoginDTO} from "./types/User.ts";
 import {loginUser} from "./api/user.ts";
+import ProfilePage from "./pages/ProfilePage.tsx";
 
 function Home() {
     const [form, setForm] = useState<UserLoginDTO>({
         userId: '',
         password: '',
     });
+    const token = localStorage.getItem('token');
+    const navigate = useNavigate();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.currentTarget;
@@ -28,6 +31,10 @@ function Home() {
         try {
             const response = await loginUser(form);
             alert(`로그인 성공 ! ${response.userName}님 환영합니다 🫡`);
+            localStorage.setItem('token', response.token);
+            localStorage.setItem('userName', response.userName);
+            navigate('/'); // 홈으로 이동 (혹은 로그인페이지로)
+            window.location.reload();
         } catch (err) {
             alert('로그인 실패');
         }
@@ -43,24 +50,33 @@ function Home() {
                 </h1>
             </div>
 
-            <div className="form-container">
-                <h2>로그인</h2>
-                <div className="form-group">
-                    <label>아이디</label>
-                    <input name="userId" value={form.userId} onChange={handleChange} placeholder="아이디"/>
+            { token ? (
+                <div className="right-menu">
+                    <div className="menu-card-right" onClick={() => navigate("/boards")}>
+                        게시글 조회
+                    </div>
+                    <div className="menu-card-left" onClick={() => navigate("/boards/new")}>
+                        게시글 작성
+                    </div>
                 </div>
-                <div className="form-group">
-                    <label>비밀번호</label>
-                    <input type="password" name="password" value={form.password} onChange={handleChange}
-                           placeholder="비밀번호"/>
-                </div>
-                <button onClick={handleSubmit}>로그인</button>
+            ) : (
+                <div className="form-container">
+                    <h2>로그인</h2>
+                    <div className="form-group">
+                        <label>아이디</label>
+                        <input name="userId" value={form.userId} onChange={handleChange} placeholder="아이디"/>
+                    </div>
+                    <div className="form-group">
+                        <label>비밀번호</label>
+                        <input type="password" name="password" value={form.password} onChange={handleChange} placeholder="비밀번호"/>
+                    </div>
+                    <button className="form-button" onClick={handleSubmit}>로그인</button>
 
-                {/* 회원가입 안내 추가 */}
-                <div className="signup-link">
-                    아직 회원이 아니신가요? <Link to="/register">회원가입</Link>
+                    <div className="signup-link">
+                        아직 회원이 아니신가요? <Link to="/register">회원가입</Link>
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 }
@@ -77,6 +93,8 @@ function App() {
                 <Route path="/boards/new" element={<PostBoard/>}/>
                 <Route path="/board/:id" element={<BoardDetail/>}/>
                 <Route path="/board/:id/edit" element={<EditBoard/>} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/boards/:type" element={<GetBoards />} />
             </Routes>
         </BrowserRouter>
     );

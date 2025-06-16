@@ -34,4 +34,7 @@ public class User {
 
     @Column(name = "createdTime")
     private Date createdTime; // 가입일
+
+    @Column(name = "profileImage")
+    private String profileImage = "/images/default_profile.png";
 }

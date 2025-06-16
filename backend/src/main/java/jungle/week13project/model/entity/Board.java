@@ -28,8 +28,6 @@ public class Board {
 
     private String imageUrl;
 
-    private String author;
-
     private Integer viewCount = 0;
 
     private Integer likeCount = 0;
@@ -41,6 +39,10 @@ public class Board {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Comment> comments = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;  // 작성자
 
     // 생성 시점 자동 설정
     @PrePersist
